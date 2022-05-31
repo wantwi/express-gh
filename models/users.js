@@ -34,17 +34,7 @@ const userSchema = new mongoose.Schema(
       minlength: [8, "Your password must be at least 8 characters long"],
       select: false,
     },
-    passwordConfirm: {
-      type: String,
-      required: [true, 'Please confirm your password'],
-      validate: {
-        // This only works on CREATE() and SAVE()!!!
-        validator: function (val) {
-          return this.password === val;
-        },
-        message: 'Password does not match',
-      },
-    },
+    
     createdAt: {
       type: Date,
       default: Date.now,
@@ -66,9 +56,7 @@ userSchema.pre("save", async function (next) {
 
   this.password = await bcrypt.hash(this.password, 10);
 
-  // Delete the passwordConfirm field from Database
-  this.passwordConfirm = undefined;
-  next();
+
 });
 
 // Return JSON Web Token
