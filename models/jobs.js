@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const slugify = require("slugify");
-const geocoder = require("../utils/geocoder");
+// const geocoder = require("../utils/geocoder");
 
 const jobSchema = new mongoose.Schema({
   title: {
