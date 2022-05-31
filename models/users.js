@@ -16,10 +16,14 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: [validator.isEmail, "Please enter valid email address"],
     },
+    photo: {
+      type: String,
+      default: 'default.jpg',
+    },
     role: {
       type: String,
       enum: {
-        values: ["user", "employeer", "customer", "admin"],
+        values: ["user",'guide', 'lead-guide', "admin"],
         message: "Please select correct role",
       },
       default: "user",
@@ -29,6 +33,17 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please enter password for your account"],
       minlength: [8, "Your password must be at least 8 characters long"],
       select: false,
+    },
+    passwordConfirm: {
+      type: String,
+      required: [true, 'Please confirm your password'],
+      validate: {
+        // This only works on CREATE() and SAVE()!!!
+        validator: function (val) {
+          return this.password === val;
+        },
+        message: 'Password does not match',
+      },
     },
     createdAt: {
       type: Date,
@@ -50,6 +65,10 @@ userSchema.pre("save", async function (next) {
   }
 
   this.password = await bcrypt.hash(this.password, 10);
+
+  // Delete the passwordConfirm field from Database
+  this.passwordConfirm = undefined;
+  next();
 });
 
 // Return JSON Web Token
