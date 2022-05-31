@@ -1,5 +1,5 @@
 const Job = require("../models/jobs");
-const geoCoder = require("../utils/geocoder");
+const geoCoder = require("../utils/geoCoder");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAyncErrors = require("../middleware/catchAsyncErrors");
 const APIFilters = require("../utils/apiFilters");
