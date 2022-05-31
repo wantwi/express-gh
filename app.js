@@ -61,6 +61,7 @@ app.use(limiter);
 
 // Set up body parser
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"))
 
 const middleware = (req, res, next) => {
   console.log("from midware");
@@ -79,10 +80,7 @@ app.use("/api/v1", jobs);
 app.use("/api/v1", auth);
 app.use("/api/v1", user);
 
-app.get('/',(req, res)=>{
-  res.json("hello")
 
-})
 
 // Handle unhandled routes
 app.all("*", (req, res, next) => {
