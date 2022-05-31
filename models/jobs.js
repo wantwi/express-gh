@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const slugify = require("slugify");
-const geoCoder = require("../utils/geocoder");
+const geocoder = require("../utils/geocoder");
 
 const jobSchema = new mongoose.Schema({
   title: {
@@ -124,7 +124,7 @@ jobSchema.pre("save", function (next) {
 
 // Setting up Location
 // jobSchema.pre('save', async function(next) {
-//     const loc = await geoCoder.geocode(this.address);
+//     const loc = await geocoder.geocode(this.address);
 
 //     this.location = {
 //         type : 'Point',

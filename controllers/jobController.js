@@ -1,5 +1,5 @@
 const Job = require("../models/jobs");
-const geoCoder = require("../utils/geocoder");
+const geocoder = require("../utils/geocoder");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAyncErrors = require("../middleware/catchAsyncErrors");
 const APIFilters = require("../utils/apiFilters");
@@ -135,7 +135,7 @@ exports.deleteJob = catchAyncErrors(async (req, res, next) => {
 exports.getJobByDistance = catchAyncErrors(async (req, res, next) => {
   const { zipcode, distance } = req.params;
 
-  const loc = await geoCoder.geocode(zipcode);
+  const loc = await geocoder.geocode(zipcode);
   const latitude = loc[0].latitude;
   const longitude = loc[0].longitude;
 
