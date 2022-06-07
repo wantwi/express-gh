@@ -75,11 +75,14 @@ app.use(middleware);
 const jobs = require("./routes/jobs");
 const auth = require("./routes/auth");
 const user = require("./routes/user");
+const tour = require("./routes/tour");
+const booking = require("./routes/booking");
 
 app.use("/api/v1", jobs);
 app.use("/api/v1", auth);
 app.use("/api/v1", user);
-
+app.use("/api/v1", tour);
+app.use("/api/v1", booking);
 
 
 // Handle unhandled routes

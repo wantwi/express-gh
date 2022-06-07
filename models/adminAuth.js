@@ -4,17 +4,17 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
-const userSchema = new mongoose.Schema(
+
+const adminSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "Please enter your name"],
     },
-    email: {
+    username: {
       type: String,
-      required: [true, "Please enter your email address"],
+      required: [true, "Please enter your username"],
       unique: true,
-      validate: [validator.isEmail, "Please enter valid email address"],
     },
     photo: {
       type: String,
@@ -23,10 +23,10 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: {
-        values: ["user",'guide', 'lead-guide', "admin"],
+        values: ['guide', 'lead-guide', "admin"],
         message: "Please select correct role",
       },
-      default: "user",
+      default: "guide",
     },
     password: {
       type: String,
@@ -34,7 +34,10 @@ const userSchema = new mongoose.Schema(
       minlength: [8, "Your password must be at least 8 characters long"],
       select: false,
     },
-    
+    refreshToken:{
+        type: String,
+        select: true,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
@@ -49,7 +52,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Encypting passwords before saving
-userSchema.pre("save", async function (next) {
+adminSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
@@ -57,19 +60,36 @@ userSchema.pre("save", async function (next) {
 });
 
 // Return JSON Web Token
-userSchema.methods.getJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+adminSchema.methods.getJwtToken = function () {
+  return jwt.sign({ id: this._id,role:this.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_TIME,
   });
 };
 
 // Compare user password in database password
-userSchema.methods.comparePassword = async function (enterPassword) {
+adminSchema.methods.comparePassword = async function (enterPassword) {
   return await bcrypt.compare(enterPassword, this.password);
 };
 
+
 // Generate Password Reset Token
-userSchema.methods.getResetPasswordToken = function () {
+adminSchema.methods.getRefreshToken = function () {
+    const refreshToken = crypto.randomBytes(20).toString("hex");
+
+  // Hash and set to resetPasswordToken
+  this.refreshToken = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+
+
+  return refreshToken;
+  };
+
+//
+
+// Generate Password Reset Token
+adminSchema.methods.getResetPasswordToken = function () {
   // Generate token
   const resetToken = crypto.randomBytes(20).toString("hex");
 
@@ -86,11 +106,11 @@ userSchema.methods.getResetPasswordToken = function () {
 };
 
 // Show all jobs create by user using virtuals
-userSchema.virtual('jobsPublished', {
-    ref : 'Job',
-    localField : '_id',
-    foreignField : 'user',
-    justOne : false
-});
+// adminSchema.virtual('jobsPublished', {
+//     ref : 'Job',
+//     localField : '_id',
+//     foreignField : 'user',
+//     justOne : false
+// });
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("adminuser", adminSchema);

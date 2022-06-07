@@ -1,8 +1,9 @@
 // Create and send token and save in cookie
 const sendToken = (user, statusCode, res) => {
   // Create JWT Token
+  console.log({user})
   const token = user.getJwtToken();
-  const refreshToken = user.refreshToken();
+  const refreshToken = user.getRefreshToken();
 
   // Options for cookie
   const options = {
@@ -16,9 +17,11 @@ const sendToken = (user, statusCode, res) => {
   //     options.secure = true;
   // }
 
-  res.status(statusCode).cookie("token", token, options).json({
+  res.status(statusCode).cookie("refresh_token", refreshToken, options).json({
     success: true,
-    token,
+    name:user.name,
+    token
+    
   });
 };
 

@@ -1,16 +1,18 @@
-const User = require("../models/users");
+const AdminUser = require("../models/adminAuth");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/errorHandler");
-const sendToken = require("../utils/jwtToken");
+const sendToken = require("../utils/adminjwtToken");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 // Register a new user   =>   /api/v1/user/register
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
-  const { name, email, password, role } = req.body;
+  const { name, username, password, role } = req.body;
 
-  const user = await User.create({
+  console.log(req.body);
+
+  const user = await AdminUser.create({
     name,
-    email,
+    username,
     password,
     role,
   });
@@ -21,15 +23,15 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 // Login user  =>  /api/v1/login
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   console.log(req.cookies);
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
   // Checks if email or password is entered by user
-  if (!email || !password) {
-    return next(new ErrorHandler("Please enter email & Password"), 400);
+  if (!username || !password) {
+    return next(new ErrorHandler("Please enter username & Password"), 400);
   }
 
   // Finding user in database
-  const user = await User.findOne({ email }).select("+password");
+  const user = await AdminUser.findOne({ username }).select("+password");
 
   if (!user) {
     return next(new ErrorHandler("Invalid Email or Password.", 401));
@@ -47,7 +49,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 
 // Forgot Password  =>  /api/v1/password/forgot
 exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
+  const user = await AdminUser.findOne({ email: req.body.email });
 
   // Check user email is database
   if (!user) {
@@ -66,26 +68,26 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
   const message = `Your password reset link is as follow:\n\n${resetUrl}\n\n If you have not request this, then please ignore that.`;
 
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: "Express Gh Password Recovery",
-      message,
-    });
+//   try {
+//     await sendEmail({
+//       email: user.email,
+//       subject: "Express Gh Password Recovery",
+//       message,
+//     });
 
-    res.status(200).json({
-      success: true,
-      message: `Email sent successfully to: ${user.email}`,
-      link: resetUrl,
-    });
-  } catch (error) {
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
+//     res.status(200).json({
+//       success: true,
+//       message: `Email sent successfully to: ${user.email}`,
+//       link: resetUrl,
+//     });
+//   } catch (error) {
+//     user.resetPasswordToken = undefined;
+//     user.resetPasswordExpire = undefined;
 
-    await user.save({ validateBeforeSave: false });
+//     await user.save({ validateBeforeSave: false });
 
-    return next(new ErrorHandler("Email is not sent."), 500);
-  }
+//     return next(new ErrorHandler("Email is not sent."), 500);
+//   }
 });
 
 // Reset Password   =>   /api/v1/password/reset/:token
@@ -97,7 +99,7 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
     .update(req.params.token)
     .digest("hex");
 
-  const user = await User.findOne({
+  const user = await AdminUser.findOne({
     resetPasswordToken,
     resetPasswordExpire: { $gt: Date.now() }, //expire time is gt Date.now()
   });
