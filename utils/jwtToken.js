@@ -2,7 +2,7 @@
 const sendToken = (user, statusCode, res) => {
   // Create JWT Token
   const token = user.getJwtToken();
-  const refreshToken = user.refreshToken();
+  // const refreshToken = user.refreshToken();
 
   // Options for cookie
   const options = {
