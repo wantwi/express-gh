@@ -18,23 +18,31 @@ const userSchema = new mongoose.Schema(
     },
     photo: {
       type: String,
-      default: 'default.jpg',
+      default: "default.jpg",
     },
     role: {
       type: String,
       enum: {
-        values: ["user",'guide', 'lead-guide', "admin"],
+        values: ["user", "guide", "lead-guide", "admin"],
         message: "Please select correct role",
       },
       default: "user",
     },
+    tokens: [
+      {
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     password: {
       type: String,
       required: [true, "Please enter password for your account"],
       minlength: [8, "Your password must be at least 8 characters long"],
       select: false,
     },
-    
+
     createdAt: {
       type: Date,
       default: Date.now,
@@ -58,9 +66,15 @@ userSchema.pre("save", async function (next) {
 
 // Return JSON Web Token
 userSchema.methods.getJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_TIME,
   });
+
+  user.tokens.push({ token });
+
+  //console.log(user);
+  user.save();
+  return token;
 };
 
 // Compare user password in database password
@@ -86,11 +100,11 @@ userSchema.methods.getResetPasswordToken = function () {
 };
 
 // Show all jobs create by user using virtuals
-userSchema.virtual('jobsPublished', {
-    ref : 'Job',
-    localField : '_id',
-    foreignField : 'user',
-    justOne : false
+userSchema.virtual("jobsPublished", {
+  ref: "Job",
+  localField: "_id",
+  foreignField: "user",
+  justOne: false,
 });
 
 module.exports = mongoose.model("User", userSchema);
