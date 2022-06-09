@@ -14,7 +14,7 @@ const {
 
 const { isAuthenticatedUser, authorizeRoles,isAdminAuthenticatedUser } = require("../middleware/auth");
 
-router.use(isAuthenticatedUser);
+//router.use(isAuthenticatedUser);
 
 router.route("/me").get(isAuthenticatedUser,getUserProfile);
  router.route("/jobs/applied").get(isAuthenticatedUser,authorizeRoles("user"), getAppliedJobs);
