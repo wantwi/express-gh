@@ -33,9 +33,14 @@ const userSchema = new mongoose.Schema(
         token: {
           type: String,
           required: true,
+          select: false
         },
+        select: false
       },
-    ],
+      
+    ]
+    
+    ,
     password: {
       type: String,
       required: [true, "Please enter password for your account"],
@@ -66,6 +71,7 @@ userSchema.pre("save", async function (next) {
 
 // Return JSON Web Token
 userSchema.methods.getJwtToken = function () {
+  const user = this;
   const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_TIME,
   });

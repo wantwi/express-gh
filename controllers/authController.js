@@ -124,6 +124,11 @@ exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 // Logout user   =>   /api/v1/logout
 exports.logout = catchAsyncErrors(async (req, res, next) => {
+
+  req.user.tokens = req.user.tokens.filter((x) => x.token !== req.headers.authorization.split(" ")[1]);
+  
+  await req.user.save();
+
   res.cookie("token", "none", {
     expires: new Date(Date.now()),
     httpOnly: true,
@@ -134,3 +139,13 @@ exports.logout = catchAsyncErrors(async (req, res, next) => {
     message: "Logged out successfully.",
   });
 });
+
+
+// try {
+//   req.user.tokens = req.user.tokens.filter((x) => x.token !== req.token);
+
+//   await req.user.save();
+//   res.send("you are logged out");
+// } catch (ex) {
+//   res.status(500).send(ex);
+// }

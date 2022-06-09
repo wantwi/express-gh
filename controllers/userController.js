@@ -8,10 +8,17 @@ const APIFilters = require("../utils/apiFilters");
 
 // Get current user profile   =>    /api/v1/me
 exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.user.id).populate({
-      path: "jobsPublished",
-      select: "title postingDate",
-    });
+  const user = await User.findById(req.user.id).select("-tokens.token")  
+  
+  delete user.tokens
+  
+  
+  // .populate({
+  //     path: "jobsPublished",
+  //     select: "title postingDate",
+  //   });
+
+    
 
   res.status(200).json({
     success: true,
