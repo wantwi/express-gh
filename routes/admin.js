@@ -15,6 +15,6 @@ router.route("/admin/login").post(loginUser);
 
 
 router.route("/admin/user/me").get(isAdminAuthenticatedUser,getUserProfile);
-router.route("/admin/user/profile").post(isAdminAuthenticatedUser,uploadProfileImage);
+router.route("/admin/user/profileimage").post(isAdminAuthenticatedUser,uploadProfileImage);
 
 module.exports = router;

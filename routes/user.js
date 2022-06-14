@@ -24,7 +24,7 @@ const { isAuthenticatedUser, authorizeRoles,isAdminAuthenticatedUser } = require
 
 
 router.route("/me").get(isAuthenticatedUser,getUserProfile);
-router.route("/me/profile").post(isAuthenticatedUser,uploadProfileImage);
+router.route("/me/profileimage").post(isAuthenticatedUser,uploadProfileImage);
  router.route("/jobs/applied").get(isAuthenticatedUser,authorizeRoles("user"), getAppliedJobs);
 router
   .route("/jobs/published")
