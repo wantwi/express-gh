@@ -5,6 +5,9 @@ const ErrorHandler = require("../utils/errorHandler");
 const sendToken = require("../utils/jwtToken");
 const fs = require("fs");
 const APIFilters = require("../utils/apiFilters");
+const path = require('path');
+
+
 
 // Get current user profile   =>    /api/v1/me
 exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
@@ -24,6 +27,52 @@ exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
     success: true,
     data: user,
   });
+});
+
+
+// upload profile image => /api/v1/user/:id/profile
+
+exports.uploadProfileImage = catchAsyncErrors(async (req, res, next) => {
+
+  if (!req.files) {
+    return next(new ErrorHandler('Please upload file.', 400));
+}
+
+const file = req.files.image;
+//.png, .jpg, .jpeg and .gif
+// Check file type
+const supportedFiles = /.png|.jpg|.jpeg/;
+if (!supportedFiles.test(path.extname(file.name))) {
+  return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
+}
+
+
+file.name = `${req.user.name.replace(' ', '_')}_${Date.now()}${path.parse(file.name).ext}`;
+
+
+file.mv(`./public/profiles/${file.name}`, async err => {
+  if (err) {
+      console.log(err);
+      return next(new ErrorHandler('Resume upload failed.', 500));
+  }
+
+  await User.findByIdAndUpdate(req.user.id,{photo: `/profiles/${file.name}`})
+  
+  console.log(file.name)
+
+  res.status(200).json({
+      success: true,
+      message: 'successfully',
+      imagepath:`/profiles/${file.name}`
+  })
+
+});
+
+
+
+ 
+ 
+  
 });
 
 // Update current user Password   =>    /api/v1/password/update

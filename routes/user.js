@@ -1,5 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const multer  = require('multer')
+
+
+
 
 const {
   getUserProfile,
@@ -10,13 +14,17 @@ const {
   getPublishedJobs,
   getUsers,
   deleteUserAdmin,
+  uploadProfileImage
 } = require("../controllers/userController");
 
 const { isAuthenticatedUser, authorizeRoles,isAdminAuthenticatedUser } = require("../middleware/auth");
 
 //router.use(isAuthenticatedUser);
 
+
+
 router.route("/me").get(isAuthenticatedUser,getUserProfile);
+router.route("/me/profile").post(isAuthenticatedUser,uploadProfileImage);
  router.route("/jobs/applied").get(isAuthenticatedUser,authorizeRoles("user"), getAppliedJobs);
 router
   .route("/jobs/published")

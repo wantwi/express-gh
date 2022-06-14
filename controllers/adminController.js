@@ -4,11 +4,24 @@ const ErrorHandler = require("../utils/errorHandler");
 const sendToken = require("../utils/adminjwtToken");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
+const path = require('path');
+const fs = require("fs");
+
+
+
+exports.adminTest =  catchAsyncErrors(async (req, res, next) => {
+ 
+
+  res.send("admin working")
+
+
+});
+
 // Register a new user   =>   /api/v1/user/register
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   const { name, username, password, role } = req.body;
 
-  console.log(req.body);
+  
 
   const user = await AdminUser.create({
     name,
@@ -17,14 +30,26 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
     role,
   });
 
-  sendToken(user, 200, res);
+  if(!user){
+    return next(new ErrorHandler("Something went wrong"), 500);
+  }
+
+  res.send({
+    success:true,
+    data:"User created successfully."
+  })
+
+  //sendToken(user, 200, res);
 });
+
+
+
 
 // Login user  =>  /api/v1/login
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
-  console.log(req.cookies);
+ 
   const { username, password } = req.body;
-
+  
   // Checks if email or password is entered by user
   if (!username || !password) {
     return next(new ErrorHandler("Please enter username & Password"), 400);
@@ -33,15 +58,17 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   // Finding user in database
   const user = await AdminUser.findOne({ username }).select("+password");
 
+  console.log({user});
+
   if (!user) {
-    return next(new ErrorHandler("Invalid Email or Password.", 401));
+    return next(new ErrorHandler("Invalid username or Password.", 401));
   }
 
   // Check if password is correct
   const isPasswordMatched = await user.comparePassword(password);
 
   if (!isPasswordMatched) {
-    return next(new ErrorHandler("Invalid Email or Password", 401));
+    return next(new ErrorHandler("Invalid username or Password", 401));
   }
 
   sendToken(user, 200, res);
@@ -135,4 +162,58 @@ exports.logout = catchAsyncErrors(async (req, res, next) => {
     success: true,
     message: "Logged out successfully.",
   });
+});
+
+
+exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
+  const user = await AdminUser.findById(req.user.id)
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
+});
+
+exports.uploadProfileImage = catchAsyncErrors(async (req, res, next) => {
+
+  if (!req.files) {
+    return next(new ErrorHandler('Please upload file.', 400));
+}
+
+const file = req.files.image;
+//.png, .jpg, .jpeg and .gif
+// Check file type
+const supportedFiles = /.png|.jpg|.jpeg/;
+if (!supportedFiles.test(path.extname(file.name))) {
+    return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
+}
+
+
+file.name = `${req.user.name.replace(' ', '_')}_${Date.now()}${path.parse(file.name).ext}`;
+
+
+file.mv(`./public/profiles/${file.name}`, async err => {
+  if (err) {
+      console.log(err);
+      return next(new ErrorHandler('Resume upload failed.', 500));
+  }
+
+  await AdminUser.findByIdAndUpdate(req.user.id,{photo: `/profiles/${file.name}`})
+  
+  console.log(file.name)
+
+  res.status(200).json({
+      success: true,
+      message: 'successfully',
+      imagepath: `/profiles/${file.name}`,
+     
+  })
+
+});
+
+
+
+ 
+ 
+  
 });

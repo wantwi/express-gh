@@ -65,7 +65,7 @@ app.use(express.static("public"))
 
 const middleware = (req, res, next) => {
   console.log("from midware");
-  req.user = "William Antwi";
+ 
   next();
 };
 
@@ -74,15 +74,19 @@ app.use(middleware);
 //importing routes
 const jobs = require("./routes/jobs");
 const auth = require("./routes/auth");
+const admin = require("./routes/admin");
 const user = require("./routes/user");
-const tour = require("./routes/tour");
-const booking = require("./routes/booking");
+
 
 app.use("/api/v1", jobs);
 app.use("/api/v1", auth);
 app.use("/api/v1", user);
-app.use("/api/v1", tour);
-app.use("/api/v1", booking);
+app.use("/api/v1", admin);
+
+app.get('/hello',(req, res)=>{
+  res.send("Hello Api")
+
+})
 
 
 // Handle unhandled routes
