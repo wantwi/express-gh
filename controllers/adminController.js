@@ -210,10 +210,5 @@ file.mv(`./public/profiles/${file.name}`, async err => {
   })
 
 });
-
-
-
- 
- 
   
 });

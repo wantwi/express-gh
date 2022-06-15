@@ -76,12 +76,14 @@ const jobs = require("./routes/jobs");
 const auth = require("./routes/auth");
 const admin = require("./routes/admin");
 const user = require("./routes/user");
+const hotels = require("./routes/hotels");
 
 
 app.use("/api/v1", jobs);
 app.use("/api/v1", auth);
 app.use("/api/v1", user);
 app.use("/api/v1", admin);
+app.use("/api/v1", hotels);
 
 app.get('/hello',(req, res)=>{
   res.send("Hello Api")
