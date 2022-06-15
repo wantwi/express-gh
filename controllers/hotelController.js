@@ -48,7 +48,7 @@ exports.createHotel = catchAyncErrors(async (req, res, next) => {
 
         item.name = `${Date.now()}_${idx}_${path.parse(file.name).ext}`;
 
-        galleryImages.push(`/public/hotels/${item.name}`)
+        galleryImages.push(`/hotels/${item.name}`)
     
         file.mv(`./public/hotels/${item.name}`, err => {
           if (err) {
@@ -68,7 +68,7 @@ exports.createHotel = catchAyncErrors(async (req, res, next) => {
       }
     });
 
-    req.body.landingPageImage = `/public/hotels/${file.name}`
+    req.body.landingPageImage = `/hotels/${file.name}`
     req.body.gallery = galleryImages
 
   
