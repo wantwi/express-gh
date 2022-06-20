@@ -14,7 +14,7 @@ const hotelSchema = new mongoose.Schema({
   },
   landmarks: {
     type: String,
-    
+
   },
   website: {
     type: String,
@@ -34,7 +34,7 @@ const hotelSchema = new mongoose.Schema({
     enum: {
       values: [
         "Hotels",
-        "Motels", 
+        "Motels",
         "Resorts",
         "AirBnds",
         "Casino Hotels",
@@ -42,6 +42,7 @@ const hotelSchema = new mongoose.Schema({
         "Inns",
         "Bed & Breakfast",
         "Bed and Breakfast",
+        "Swimming Pool"
       ],
       message: "Please select correct options for industry.",
     },
@@ -56,14 +57,14 @@ const hotelSchema = new mongoose.Schema({
     enum: {
       values: [
         "Gym",
-        "Bar", 
+        "Bar",
         "Restaurant",
         "Spa"
       ],
       message: "Please select correct options for industry.",
     },
   },
- 
+
   landingPageImage: {
     type: String,
     required: [true, "Please add landing page image."],
@@ -73,7 +74,7 @@ const hotelSchema = new mongoose.Schema({
     required: [true, "Please add gallery images."],
     maxlength: 5
   }
- 
+
 });
 
 

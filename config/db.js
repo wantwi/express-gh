@@ -2,11 +2,11 @@ const mongoose = require('mongoose')
 
 const connectDb = () => {
     mongoose.connect(process.env.DB_PRODUCTION, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
- }).then(cons =>{
-     console.log("connected to:" ,cons.connection.host);
- })
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }).then(cons => {
+        console.log("connected to:", cons.connection.host);
+    })
 }
 
 module.exports = connectDb

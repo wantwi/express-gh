@@ -52,8 +52,8 @@ app.use(hpp());
 
 // Rate Limiting
 const limiter = rateLimit({
-  windowMs: 10*60*1000, //10 Mints
-  max : 100
+  windowMs: 10 * 60 * 1000, //10 Mints
+  max: 100
 });
 
 app.use(cors());
@@ -65,7 +65,7 @@ app.use(express.static("public"))
 
 const middleware = (req, res, next) => {
   console.log("from midware");
- 
+
   next();
 };
 
@@ -77,15 +77,18 @@ const auth = require("./routes/auth");
 const admin = require("./routes/admin");
 const user = require("./routes/user");
 const hotels = require("./routes/hotels");
-
+const tour = require("./routes/toursite");
+const restaurants = require("./routes/restaurant");
 
 app.use("/api/v1", jobs);
 app.use("/api/v1", auth);
 app.use("/api/v1", user);
 app.use("/api/v1", admin);
 app.use("/api/v1", hotels);
+app.use("/api/v1", tour);
+app.use("/api/v1", restaurants);
 
-app.get('/hello',(req, res)=>{
+app.get('/hello', (req, res) => {
   res.send("Hello Api")
 
 })
