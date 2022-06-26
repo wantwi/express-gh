@@ -57,7 +57,7 @@ const limiter = rateLimit({
   max: 100
 });
 
-const whitelist = ['http://localhost:3000', 'http://example2.com', "*"];
+const whitelist = ['http://localhost:3000', 'http://localhost:3001', "https://localhost:3000"];
 const corsOptions = {
   credentials: true, // This is important.
   origin: (origin, callback) => {
