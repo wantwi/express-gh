@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const cors = require('cors')
-const { registerUser, loginUser, adminTest, getUserProfile, uploadProfileImage, renewToken } = require("../controllers/adminController");
+const { registerUser, loginUser, adminTest, getUserProfile, uploadProfileImage, renewToken, usersStats } = require("../controllers/adminController");
 
 const { authorizeRoles, isAdminAuthenticatedUser } = require("../middleware/auth");
 
@@ -17,5 +17,5 @@ router.route("/admin/refresh").get(renewToken);
 
 router.route("/admin/user/me").get(isAdminAuthenticatedUser, getUserProfile);
 router.route("/admin/user/profileimage").post(isAdminAuthenticatedUser, uploadProfileImage);
-
+router.route('/users/stats').get(usersStats)
 module.exports = router;

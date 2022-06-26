@@ -1,4 +1,5 @@
 const AdminUser = require("../models/adminAuth");
+const User = require("../models/users");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/errorHandler");
 const sendToken = require("../utils/adminjwtToken");
@@ -225,3 +226,20 @@ exports.uploadProfileImage = catchAsyncErrors(async (req, res, next) => {
   });
 
 });
+
+
+exports.usersStats = catchAsyncErrors(async (req, res, next) => {
+
+  const adminusers = await AdminUser.find({}).count()
+  const users = await User.find({}).count()
+
+  res.status(200).json({
+    success: true,
+    data: {
+      adminusers,
+      users
+    }
+
+  })
+
+})
