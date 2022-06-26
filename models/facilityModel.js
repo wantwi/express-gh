@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const restaurantSchema = new mongoose.Schema({
+const facilitySchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, "Please enter Job title."],
@@ -28,33 +28,37 @@ const restaurantSchema = new mongoose.Schema({
         type: String,
         validate: [validator.isEmail, "Please add a valid email address."],
     },
-    category: {
-        type: String,
-        required: [true, "Please enter industry for this job."],
-        enum: {
-            values: [
-                "Fast Foods",
-                "Casual Dining",
-                "Cafes",
-                "Pizzerias",
-                "Chinese",
-                "Italian",
-                "Turkish",
-                "Local Cuisine",
-                "Fine Dining",
-                "Pub"
-            ],
-            message: "Please select correct options for industry.",
-        },
-    },
     about: {
         type: String,
         required: [true, "Please about is required."]
     },
+    category: {
+        type: String,
+        required: [true, "Please enter industry for this job."],
+    },
+    amenities: {
+        type: [String],
+        enum: {
+            values: [
+                "gym",
+                "bar",
+                "restaurant",
+                "spa",
+                "pool",
+                "swimming pool"
+            ],
+            message: "Please select correct options for industry.",
+        },
+    },
     deviveryService: {
         type: Boolean,
-        required: [true, "Please select delivery service option."],
         default: false
+    },
+    thingsTodo: {
+        type: [String]
+    },
+    bestVisitingTime: {
+        type: String
     },
     landingPageImage: {
         type: String,
@@ -64,6 +68,10 @@ const restaurantSchema = new mongoose.Schema({
         type: [String],
         required: [true, "Please add gallery images."],
         maxlength: 5
+    },
+    facilityType: {
+        type: String,
+        required: [true, "Please type of facility."],
     }
 
 });
@@ -71,4 +79,4 @@ const restaurantSchema = new mongoose.Schema({
 
 
 
-module.exports = mongoose.model("restaurants", restaurantSchema);
+module.exports = mongoose.model("facility", facilitySchema);

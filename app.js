@@ -13,8 +13,9 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const hpp = require('hpp');
-
 dotenv.config({ path: "./config/config.env" });
+
+
 
 // Handling Uncaught Exception
 process.on("uncaughtException", (err) => {
@@ -56,7 +57,22 @@ const limiter = rateLimit({
   max: 100
 });
 
-app.use(cors());
+const whitelist = ['http://localhost:3000', 'http://example2.com', "*"];
+const corsOptions = {
+  credentials: true, // This is important.
+  origin: (origin, callback) => {
+    if (!origin) {//for bypassing postman req with  no origin
+      return callback(null, true);
+    }
+    if (whitelist.includes(origin))
+      return callback(null, true)
+
+    callback(new Error('Not allowed by CORS'));
+  }
+}
+
+app.use(cors(corsOptions));
+
 app.use(limiter);
 
 // Set up body parser
@@ -79,6 +95,7 @@ const user = require("./routes/user");
 const hotels = require("./routes/hotels");
 const tour = require("./routes/toursite");
 const restaurants = require("./routes/restaurant");
+const facility = require("./routes/facility");
 
 app.use("/api/v1", jobs);
 app.use("/api/v1", auth);
@@ -87,6 +104,7 @@ app.use("/api/v1", admin);
 app.use("/api/v1", hotels);
 app.use("/api/v1", tour);
 app.use("/api/v1", restaurants);
+app.use("/api/v1", facility);
 
 app.get('/hello', (req, res) => {
   res.send("Hello Api")

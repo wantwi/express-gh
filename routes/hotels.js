@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const {getHotels,createHotel,getById} = require("../controllers/hotelController");
+const { getHotels, createHotel, getById, queryHotels } = require("../controllers/hotelController");
 
 //  const { authorizeRoles,isAdminAuthenticatedUser } = require("../middleware/auth");
 
@@ -10,6 +10,9 @@ const {getHotels,createHotel,getById} = require("../controllers/hotelController"
 // router.route("/admin/register").post(registerUser);
 
 router.route("/hotels").get(getHotels);
+router.route("/hotel").get(queryHotels);
+router.route("/hotel/:location/:category").get(queryHotels);
+
 router.route("/hotel").post(createHotel);
 
 module.exports = router;

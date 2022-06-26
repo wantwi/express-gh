@@ -9,8 +9,8 @@ const fs = require("fs");
 
 
 
-exports.adminTest =  catchAsyncErrors(async (req, res, next) => {
- 
+exports.adminTest = catchAsyncErrors(async (req, res, next) => {
+
 
   res.send("admin working")
 
@@ -21,7 +21,7 @@ exports.adminTest =  catchAsyncErrors(async (req, res, next) => {
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   const { name, username, password, role } = req.body;
 
-  
+
 
   const user = await AdminUser.create({
     name,
@@ -30,13 +30,13 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
     role,
   });
 
-  if(!user){
+  if (!user) {
     return next(new ErrorHandler("Something went wrong"), 500);
   }
 
   res.send({
-    success:true,
-    data:"User created successfully."
+    success: true,
+    data: "User created successfully."
   })
 
   //sendToken(user, 200, res);
@@ -47,9 +47,9 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
 
 // Login user  =>  /api/v1/login
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
- 
+
   const { username, password } = req.body;
-  
+
   // Checks if email or password is entered by user
   if (!username || !password) {
     return next(new ErrorHandler("Please enter username & Password"), 400);
@@ -58,7 +58,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   // Finding user in database
   const user = await AdminUser.findOne({ username }).select("+password");
 
-  console.log({user});
+  console.log({ user });
 
   if (!user) {
     return next(new ErrorHandler("Invalid username or Password.", 401));
@@ -73,6 +73,19 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 
   sendToken(user, 200, res);
 });
+
+exports.renewToken = catchAsyncErrors(async (req, res, next) => {
+  const cookies = req.cookies;
+  if (!cookies?.refresh_token) return res.sendStatus(401);
+  const refreshToken = cookies.refresh_token;
+
+  res.clearCookie('refresh_token', { httpOnly: true, sameSite: 'None', secure: true });
+  const user = await AdminUser.findOne({ refreshToken })
+  if (!user) {
+    return next(new ErrorHandler("You have no access", 403));
+  }
+  sendToken(user, 200, res);
+})
 
 // Forgot Password  =>  /api/v1/password/forgot
 exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
@@ -95,26 +108,26 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
   const message = `Your password reset link is as follow:\n\n${resetUrl}\n\n If you have not request this, then please ignore that.`;
 
-//   try {
-//     await sendEmail({
-//       email: user.email,
-//       subject: "Express Gh Password Recovery",
-//       message,
-//     });
+  //   try {
+  //     await sendEmail({
+  //       email: user.email,
+  //       subject: "Express Gh Password Recovery",
+  //       message,
+  //     });
 
-//     res.status(200).json({
-//       success: true,
-//       message: `Email sent successfully to: ${user.email}`,
-//       link: resetUrl,
-//     });
-//   } catch (error) {
-//     user.resetPasswordToken = undefined;
-//     user.resetPasswordExpire = undefined;
+  //     res.status(200).json({
+  //       success: true,
+  //       message: `Email sent successfully to: ${user.email}`,
+  //       link: resetUrl,
+  //     });
+  //   } catch (error) {
+  //     user.resetPasswordToken = undefined;
+  //     user.resetPasswordExpire = undefined;
 
-//     await user.save({ validateBeforeSave: false });
+  //     await user.save({ validateBeforeSave: false });
 
-//     return next(new ErrorHandler("Email is not sent."), 500);
-//   }
+  //     return next(new ErrorHandler("Email is not sent."), 500);
+  //   }
 });
 
 // Reset Password   =>   /api/v1/password/reset/:token
@@ -178,37 +191,37 @@ exports.uploadProfileImage = catchAsyncErrors(async (req, res, next) => {
 
   if (!req.files) {
     return next(new ErrorHandler('Please upload file.', 400));
-}
-
-const file = req.files.image;
-//.png, .jpg, .jpeg and .gif
-// Check file type
-const supportedFiles = /.png|.jpg|.jpeg/;
-if (!supportedFiles.test(path.extname(file.name))) {
-    return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
-}
-
-
-file.name = `${req.user.name.replace(' ', '_')}_${Date.now()}${path.parse(file.name).ext}`;
-
-
-file.mv(`./public/profiles/${file.name}`, async err => {
-  if (err) {
-      console.log(err);
-      return next(new ErrorHandler('Resume upload failed.', 500));
   }
 
-  await AdminUser.findByIdAndUpdate(req.user.id,{photo: `/profiles/${file.name}`})
-  
-  console.log(file.name)
+  const file = req.files.image;
+  //.png, .jpg, .jpeg and .gif
+  // Check file type
+  const supportedFiles = /.png|.jpg|.jpeg/;
+  if (!supportedFiles.test(path.extname(file.name))) {
+    return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
+  }
 
-  res.status(200).json({
+
+  file.name = `${req.user.name.replace(' ', '_')}_${Date.now()}${path.parse(file.name).ext}`;
+
+
+  file.mv(`./public/profiles/${file.name}`, async err => {
+    if (err) {
+      console.log(err);
+      return next(new ErrorHandler('Resume upload failed.', 500));
+    }
+
+    await AdminUser.findByIdAndUpdate(req.user.id, { photo: `/profiles/${file.name}` })
+
+    console.log(file.name)
+
+    res.status(200).json({
       success: true,
       message: 'successfully',
       imagepath: `/profiles/${file.name}`,
-     
-  })
 
-});
-  
+    })
+
+  });
+
 });

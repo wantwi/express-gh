@@ -5,24 +5,27 @@ class APIFilters {
     }
 
     filter() {
-        const queryCopy = {...this.queryStr};
+        const queryCopy = { ...this.queryStr };
 
-            console.log(this.queryStr);
+        console.log(this.queryStr);
 
         // Removing fields from the query
-         const removeFields = ['sort', 'fields', 'q', 'limit', 'page'];
+        const removeFields = ['sort', 'fields', 'q', 'limit', 'page'];
         removeFields.forEach(el => delete queryCopy[el]);
 
         // Advance filter using: lt, lte, gt, gte
         let queryStr = JSON.stringify(queryCopy);
+        console.log({ name: "this:", queryStr });
         queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`)
+        //queryStr
+        console.log({ queryStr });
 
         this.query = this.query.find(JSON.parse(queryStr));
         return this;
     }
 
     sort() {
-        if(this.queryStr.sort) {
+        if (this.queryStr.sort) {
             console.log(this.queryStr);
             const sortBy = this.queryStr.sort.split(',').join(' ');
             this.query = this.query.sort(sortBy);
@@ -34,7 +37,7 @@ class APIFilters {
     }
 
     limitFields() {
-        if(this.queryStr.fields) {
+        if (this.queryStr.fields) {
             const fields = this.queryStr.fields.split(',').join(' ');
             this.query = this.query.select(fields);
         } else {
@@ -45,10 +48,12 @@ class APIFilters {
     }
 
     searchByQuery() {
-        if(this.queryStr.q) {
+        if (this.queryStr.q) {
+            console.log(this.queryStr.q);
             const qu = this.queryStr.q.split('-').join(' ');
-            this.query = this.query.find({$text: {$search: "\""+ qu +"\""}});
+            this.query = this.query.find({ $text: { $search: { $regex: qu, $options: 'i' } } });
         }
+        // { $regex: '^' + search_text, $options: 'i' }
 
         return this;
     }

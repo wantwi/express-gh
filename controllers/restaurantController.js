@@ -35,7 +35,7 @@ exports.createRestaurant = catchAyncErrors(async (req, res, next) => {
 
     const file = req.files.landingPageImage;
     const gallery = req.files.gallery;
-    const supportedFiles = /.png|.jpg|.jpeg/;
+    const supportedFiles = /.png|.jpg|.jpeg|.svg/;
     if (!supportedFiles.test(path.extname(file.name))) {
         return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
     }
@@ -64,7 +64,7 @@ exports.createRestaurant = catchAyncErrors(async (req, res, next) => {
     file.mv(`./public/restaurants/${file.name}`, async err => {
         if (err) {
             console.log(err);
-            return next(new ErrorHandler('Resume upload failed.', 500));
+            return next(new ErrorHandler('Image upload failed.', 500));
         }
     });
 
