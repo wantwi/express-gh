@@ -59,7 +59,6 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   // Finding user in database
   const user = await AdminUser.findOne({ username }).select("+password");
 
-  console.log({ user });
 
   if (!user) {
     return next(new ErrorHandler("Invalid username or Password.", 401));
@@ -80,7 +79,7 @@ exports.renewToken = catchAsyncErrors(async (req, res, next) => {
   if (!cookies?.refresh_token) return res.sendStatus(401);
   const refreshToken = cookies.refresh_token;
 
-  res.clearCookie('refresh_token', { httpOnly: true, sameSite: 'None', secure: true });
+  //res.clearCookie('refresh_token', { httpOnly: true, sameSite: 'None', secure: true });
   const user = await AdminUser.findOne({ refreshToken })
   if (!user) {
     return next(new ErrorHandler("You have no access", 403));

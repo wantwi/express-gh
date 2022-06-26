@@ -34,9 +34,9 @@ const adminSchema = new mongoose.Schema(
       minlength: [8, "Your password must be at least 8 characters long"],
       select: false,
     },
-    refreshToken:{
-        type: String,
-        select: true,
+    refreshToken: {
+      type: String,
+      select: true,
     },
     createdAt: {
       type: Date,
@@ -61,7 +61,7 @@ adminSchema.pre("save", async function (next) {
 
 // Return JSON Web Token
 adminSchema.methods.getJwtToken = function () {
-  return jwt.sign({ id: this._id,role:this.role }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_TIME,
   });
 };
@@ -74,7 +74,8 @@ adminSchema.methods.comparePassword = async function (enterPassword) {
 
 // Generate Password Reset Token
 adminSchema.methods.getRefreshToken = function () {
-    const refreshToken = crypto.randomBytes(20).toString("hex");
+  const user = this;
+  const refreshToken = crypto.randomBytes(20).toString("hex");
 
   // Hash and set to resetPasswordToken
   this.refreshToken = crypto
@@ -82,9 +83,13 @@ adminSchema.methods.getRefreshToken = function () {
     .update(refreshToken)
     .digest("hex");
 
+  user.refreshToken = refreshToken
+
+  //console.log(user);
+  user.save();
 
   return refreshToken;
-  };
+};
 
 //
 
