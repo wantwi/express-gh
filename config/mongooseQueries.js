@@ -68,3 +68,15 @@ db.getCollection("persons")
 //Find all persons with second tag "ad" and where tags array consists of exactly 3 tags
 
 //db.getCollection("persons").find({$and:[{"tags.1":"ad"},{tags:{$size:3}}]})
+
+//nested array
+//db.getCollection("lesson_1").find({"friends.age":{$gt:20, $lt:25}})
+
+//element match
+db.getCollection("lesson_1").find({friends:{$elemMatch:{"name":"Lora","age":23}}})
+db.getCollection("persons").find({},{name:1, age:1, eyeColor:1, _id:0})
+
+
+//case insensitive
+db.getCollection("persons").find({gender:{$regex:/FEMALE/i}}).count()
+db.getCollection("persons").find({gender:"FEMALE"}).count()
