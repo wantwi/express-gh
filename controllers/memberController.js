@@ -17,6 +17,7 @@ exports.getToursite = async (req, res, next) => {
 
 exports.createMember = catchAyncErrors(async (req, res, next) => {
 
+  console.log(req.files)
 
   if (!req.files) {
     return next(new ErrorHandler('Please upload file.', 400));
