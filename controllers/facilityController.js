@@ -166,9 +166,9 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
             "bed and breakfast"
         ]
 
-        if (!req.body.hasOwnProperty('amenities') || req.body?.amenities.length === 0) {
-            return next(new ErrorHandler("Hotels requires amenities", 400));
-        }
+        // if (!req.body.hasOwnProperty('amenities') || req.body?.amenities.length === 0) {
+        //     return next(new ErrorHandler("Hotels requires amenities", 400));
+        // }
 
         // if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
         //     return next(new ErrorHandler("Please select correct options for category", 400));
