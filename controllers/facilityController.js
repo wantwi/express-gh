@@ -174,7 +174,7 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
         //     return next(new ErrorHandler("Please select correct options for category", 400));
         // }
 
-        req.body.amenities = req.body.amenities.split(',')
+        // req.body.amenities = req.body.amenities.split(',')
     }
     else if (facilityType.toLowerCase() === "restaurants") {
         const categoryOpts = [
@@ -190,45 +190,45 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
             "pub"
         ]
 
-        if (!req.body.hasOwnProperty('deviveryService')) {
-            return next(new ErrorHandler("Devivery Service option is required", 400));
-        }
+        // if (!req.body.hasOwnProperty('deviveryService')) {
+        //     return next(new ErrorHandler("Devivery Service option is required", 400));
+        // }
 
-        if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
-            return next(new ErrorHandler("Please select correct options for category", 400));
-        }
+        // if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
+        //     return next(new ErrorHandler("Please select correct options for category", 400));
+        // }
     }
     else if (facilityType.toLowerCase() === "toursites") {
-        const categoryOpts = [
-            "historical & heritage attractions",
-            "historical and heritage attractions",
-            "beaches",
-            "national parks",
-            "waterfalls",
-            "mountains & hills",
-            "mountains and hills",
-            "islands",
-            "forests",
-            "entertainment parks",
-            "wildlife attractions",
-            "museums & art galleries",
-            "museums and art galleries",
-            "stadiums",
-            "exhibitions",
-            "festivals",
-            "others"
-        ]
+        // const categoryOpts = [
+        //     "historical & heritage attractions",
+        //     "historical and heritage attractions",
+        //     "beaches",
+        //     "national parks",
+        //     "waterfalls",
+        //     "mountains & hills",
+        //     "mountains and hills",
+        //     "islands",
+        //     "forests",
+        //     "entertainment parks",
+        //     "wildlife attractions",
+        //     "museums & art galleries",
+        //     "museums and art galleries",
+        //     "stadiums",
+        //     "exhibitions",
+        //     "festivals",
+        //     "others"
+        // ]
 
-        if (!req.body.hasOwnProperty('thingsTodo') || req.body?.thingsTodo.length === 0) {
-            return next(new ErrorHandler("Things Todo is required", 400));
-        }
-        if (!req.body.hasOwnProperty('bestVisitingTime')) {
-            return next(new ErrorHandler("Best Visiting Time is required", 400));
-        }
+        // if (!req.body.hasOwnProperty('thingsTodo') || req.body?.thingsTodo.length === 0) {
+        //     return next(new ErrorHandler("Things Todo is required", 400));
+        // }
+        // if (!req.body.hasOwnProperty('bestVisitingTime')) {
+        //     return next(new ErrorHandler("Best Visiting Time is required", 400));
+        // }
 
-        if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
-            return next(new ErrorHandler("Please select correct options for category", 400));
-        }
+        // if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
+        //     return next(new ErrorHandler("Please select correct options for category", 400));
+        // }
     }
 
     if (!req.files) {
