@@ -38,17 +38,17 @@ const facilitySchema = new mongoose.Schema({
     },
     amenities: {
         type: [String],
-        enum: {
-            values: [
-                "gym",
-                "bar",
-                "restaurant",
-                "spa",
-                "pool",
-                "swimming pool"
-            ],
-            message: "Please select correct options for industry.",
-        },
+        // enum: {
+        //     values: [
+        //         "gym",
+        //         "bar",
+        //         "restaurant",
+        //         "spa",
+        //         "pool",
+        //         "swimming pool"
+        //     ],
+        //     message: "Please select correct options for industry.",
+        // },
     },
     deviveryService: {
         type: Boolean,
