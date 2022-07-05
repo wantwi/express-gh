@@ -16,6 +16,32 @@ const facilitySchema = new mongoose.Schema({
         type: String,
 
     },
+    region:{
+        type: String,
+        required: [true, "Please add region."],
+        enum: {
+            values: [
+                "Greater Accra",
+                "Central",
+                "Eastern",
+                "Western",
+                "Ashanti",
+                "Northern",
+                "Upper East",
+                "Upper West",
+                "North East",
+                "Savannah",
+                "Bono East",
+                "Ahafo",
+                "Western North",
+                "Oti",
+                "Bono",
+                "Volta"
+            ],
+            message: "Please select correct options for industry.",
+        },
+
+    },
     website: {
         type: String,
         required: [true, "Please add website."],

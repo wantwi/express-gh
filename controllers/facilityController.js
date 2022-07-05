@@ -107,6 +107,151 @@ exports.getAllStats = async (req, res, next) => {
 };
 
 
+
+exports.getAllbyRegions = async (req, res, next) => {
+    const { params } = req
+    const { region } = params
+    let facilities = null;
+    if (region) {
+        facilities = await Facility.find({ region })
+    }
+    else {
+        facilities = await Facility.aggregate([
+            {
+                $facet: {
+                    northern: [
+
+                        {
+                            $match: {
+                                "region": "Northern",
+
+                            },
+
+                        }
+
+                    ],
+                    upperEast: [
+                        {
+                            $match: {
+                                "region": "Upper East"
+                            }
+                        }
+                    ],
+                    upperWest: [
+                        {
+                            $match: {
+                                "region": "Upper West"
+                            }
+                        }
+                    ],
+                    savannah: [
+                        {
+                            $match: {
+                                "region": "Savannah"
+                            }
+                        }
+                    ],
+                    bono: [
+                        {
+                            $match: {
+                                "region": "Bono"
+                            }
+                        }
+                    ],
+                    bonoEast: [
+                        {
+                            $match: {
+                                "region": "Bono East"
+                            }
+                        }
+                    ],
+                    ahafo: [
+                        {
+                            $match: {
+                                "region": "Ahafo"
+                            }
+                        }
+                    ],
+                    western: [
+                        {
+                            $match: {
+                                "region": "Western"
+                            }
+                        }
+                    ],
+                    westernNorth: [
+                        {
+                            $match: {
+                                "region": "Western North"
+                            }
+                        }
+                    ],
+                    northEast: [
+                        {
+                            $match: {
+                                "region": "North-East"
+                            }
+                        }
+                    ],
+                    oti: [
+                        {
+                            $match: {
+                                "region": "Oti"
+                            }
+                        }
+                    ],
+                    volta: [
+                        {
+                            $match: {
+                                "region": "Volta"
+                            }
+                        }
+                    ],
+                    eastern: [
+                        {
+                            $match: {
+                                "region": "Western"
+                            }
+                        }
+                    ],
+                    central: [
+                        {
+                            $match: {
+                                "region": "Central"
+                            }
+                        }
+                    ],
+                    ashanti: [
+                        {
+                            $match: {
+                                "region": "Ashanti"
+                            }
+                        }
+                    ],
+                    greaterAccra: [
+                        {
+                            $match: {
+                                "region": "Greater Accra"
+                            }
+                        }
+                    ]
+                },
+
+            }
+        ])
+
+        if (facilities) {
+            facilities = facilities[0]
+        }
+    }
+
+    res.status(200).json({
+        success: true,
+        data: facilities,
+    });
+};
+
+
 exports.searchFacility = catchAyncErrors(async (req, res, next) => {
     let facilities = null
     const { query } = req
