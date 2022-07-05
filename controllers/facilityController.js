@@ -12,6 +12,7 @@ exports.getAll = async (req, res, next) => {
     if (facilityType) {
         facilities = await Facility.find({ facilityType })
     }
+
     else {
         facilities = await Facility.aggregate([
             {
@@ -260,17 +261,17 @@ exports.searchFacility = catchAyncErrors(async (req, res, next) => {
     console.log(query);
 
     if (Object.keys(query).length > 0) {
-        const { location = "", category = "all" } = query
+        const { location = "", category = "all", type = "" } = query
         if (query?.location) {
             if (category.toLowerCase() === "all") {
                 facilities = await Facility.find({ location: { $regex: location, $options: 'i' } })
             }
             else {
-                facilities = await Facility.find({ $and: [{ location: { $regex: location, $options: 'i' } }, { category: { $regex: category, $options: 'i' } }] })
+                facilities = await Facility.find({ $and: [{ location: { $regex: location, $options: 'i' } }, { facilityType: { $regex: category, $options: 'i' } }] })
             }
         }
         else if (location === "" && category.length > 0) {
-            facilities = await Facility.find({ category: { $regex: category, $options: 'i' } })
+            facilities = await Facility.find({ facilityType: { $regex: category, $options: 'i' } })
         }
     }
 
