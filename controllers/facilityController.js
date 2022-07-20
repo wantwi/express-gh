@@ -446,4 +446,29 @@ exports.getById = catchAyncErrors(async (req, res, next) => {
     });
 });
 
+exports.addRegion = catchAyncErrors(async (req, res, next) => {
+
+
+    let response = await Facility.findById(req.params.id);
+
+    if(!response){
+        return next(new ErrorHandler('Facility not found', 204))
+    }
+
+    const facility = await Facility.updateOne({_id:req.params.id},{$set: {region: req.body.region}});
+
+    res.status(200).json({
+        success: true,
+        data: facility,
+    });
+
+    // if (!facility) {
+    //     return next(new ErrorHandler("No record", 404));
+    // }
+
+  
+});
+
+
+
 
