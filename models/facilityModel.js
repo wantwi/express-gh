@@ -19,6 +19,7 @@ const facilitySchema = new mongoose.Schema({
     region:{
         type: String,
         required: [true, "Please add region."],
+        trim:true,
         enum: {
             values: [
                 "Greater Accra",

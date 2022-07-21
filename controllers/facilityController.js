@@ -455,18 +455,26 @@ exports.addRegion = catchAyncErrors(async (req, res, next) => {
         return next(new ErrorHandler('Facility not found', 204))
     }
 
-    const facility = await Facility.updateOne({_id:req.params.id},{$set: {region: req.body.region}});
+    console.log({...response,...req.body})
+
+    const facility = await Facility.updateOne({_id:req.params.id},{$set: {...req.body}});
 
     res.status(200).json({
         success: true,
         data: facility,
     });
-
-    // if (!facility) {
-    //     return next(new ErrorHandler("No record", 404));
-    // }
-
   
+});
+
+
+exports.removeFacility = catchAyncErrors(async (req, res, next) => {
+
+    let response = await Facility.findOneAndRemove({ _id: req.params.id });
+    res.status(200).json({
+        success: true,
+        data: response,
+    });
+
 });
 
 
