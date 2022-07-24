@@ -2,8 +2,7 @@ const Facility = require("../models/facilityModel");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAyncErrors = require("../middleware/catchAsyncErrors");
 const path = require('path');
-
-
+const fileUploadService = require('../config/s3');
 //Get all Hotels => /api/v1/jobs
 exports.getAll = async (req, res, next) => {
     const { params } = req
@@ -232,56 +231,109 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
     if (!req.files) {
         return next(new ErrorHandler('Please upload file.', 400));
     }
+
+
     const file = req.files.landingPageImage;
     const gallery = req.files.gallery;
 
-    if (!supportedFiles.test(path.extname(file.name))) {
-        return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
+    if (gallery.length < 5) {
+        return next(new ErrorHandler('Please upload 5 images for gallery.', 400));
+    }
+
+    // uploadFile(file)
+
+    //let arr = [], uploadRes = null,  gallery_1 = "", gallery_2 = "", gallery_3 = "", gallery_4 = "", gallery_5 = ""
+    // gallery.map((item, idx) => {
+    //     count = count + 1
+    //     fileUploadService.uploadFileToAws(item, "hotels").then(data => {
+    //         console.log({ data })
+    //         arr.push(data)
+    //     });
+
+
+    // })
+
+
+    const uploadRes = await fileUploadService.uploadFileToAws(file, facilityType);
+    const gallery_1 = await fileUploadService.uploadFileToAws(gallery[0], facilityType);
+    const gallery_2 = await fileUploadService.uploadFileToAws(gallery[1], facilityType);
+    const gallery_3 = await fileUploadService.uploadFileToAws(gallery[2], facilityType);
+    const gallery_4 = await fileUploadService.uploadFileToAws(gallery[3], facilityType);
+
+    const gallery_5 = await fileUploadService.uploadFileToAws(gallery[4], facilityType);
+
+
+
+    if (uploadRes && gallery_1 && gallery_2 && gallery_3 && gallery_4 && gallery_5) {
+
+        // return res.status(200).send({ uploadRes, arr })
+
+        req.body.landingPageImage = uploadRes.fileUrl
+        req.body.gallery = [gallery_1.fileUrl, gallery_2.fileUrl, gallery_3.fileUrl, gallery_4.fileUrl, gallery_5.fileUrl]
+        req.body.facilityType = facilityType
+
+        // const facility = await Facility.create(req.body);
+        res.status(200).json({
+            success: true,
+            message: "successful",
+            data: req.body,
+        });
+
     }
 
 
 
-    gallery.map((item, idx) => {
-
-        if (!supportedFiles.test(path.extname(item.name))) {
-            return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
-        }
-
-        item.name = `${Date.now()}_${idx}_${path.parse(file.name).ext}`;
-
-        galleryImages.push(`/${facilityType}/${item.name}`)
-
-        file.mv(`./public/${facilityType}/${item.name}`, err => {
-            if (err) {
-                console.log(err);
-                return next(new ErrorHandler('Image upload failed.', 500));
-            }
-
-        });
-    })
-
-
-    file.name = `${Date.now()}${path.parse(file.name).ext}`;
-    file.mv(`./public/${facilityType}/${file.name}`, async err => {
-        if (err) {
-            console.log(err);
-            return next(new ErrorHandler('Image upload failed.', 500));
-        }
-    });
-
-    req.body.landingPageImage = `/${facilityType}/${file.name}`
-    req.body.gallery = galleryImages
-    req.body.facilityType = facilityType
 
 
 
+    // if (!supportedFiles.test(path.extname(file.name))) {
+    //     return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
+    // }
 
-    const facility = await Facility.create(req.body);
-    res.status(200).json({
-        success: true,
-        message: "successful",
-        data: facility,
-    });
+
+
+    // gallery.map((item, idx) => {
+
+    //     if (!supportedFiles.test(path.extname(item.name))) {
+    //         return next(new ErrorHandler('Please upload images (png,jpg,jpeg).', 400))
+    //     }
+
+    //     item.name = `${Date.now()}_${idx}_${path.parse(file.name).ext}`;
+
+    //     galleryImages.push(`/${facilityType}/${item.name}`)
+
+    //     file.mv(`./public/${facilityType}/${item.name}`, err => {
+    //         if (err) {
+    //             console.log(err);
+    //             return next(new ErrorHandler('Image upload failed.', 500));
+    //         }
+
+    //     });
+    // })
+
+
+    // file.name = `${Date.now()}${path.parse(file.name).ext}`;
+
+
+    // file.mv(`./public/${facilityType}/${file.name}`, async err => {
+    //     if (err) {
+    //         console.log(err);
+    //         return next(new ErrorHandler('Image upload failed.', 500));
+    //     }
+    // });
+
+    // uploadFile(`./public/${facilityType}/${file.name}`)
+
+    // return
+
+    // req.body.landingPageImage = `/${facilityType}/${file.name}`
+    // req.body.gallery = galleryImages
+    // req.body.facilityType = facilityType
+
+
+
+
+
 });
 
 // Get a single hotel by id   =>  /api/v1/hotel/:id
@@ -296,6 +348,19 @@ exports.getById = catchAyncErrors(async (req, res, next) => {
         success: true,
         data: facility,
     });
+});
+
+
+exports.uploadFile = catchAyncErrors(async (req, res, next) => {
+    //adding user
+
+    console.log(req.files.file)
+
+    // if (req.file) {
+    //     req.body.image = req.file.path ? req.file.path : "";
+    // }
+
+    res.status(200).json({ file: req.files.file });
 });
 
 

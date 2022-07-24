@@ -13,6 +13,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const hpp = require('hpp');
+const multer = require('multer')
 dotenv.config({ path: "./config/config.env" });
 
 
@@ -107,9 +108,32 @@ app.use("/api/v1", restaurants);
 app.use("/api/v1", facility);
 
 app.get('/hello', (req, res) => {
-  res.send("Hello Api")
+  const obj = {
+    name: "SwichUpXperince",
+    image: "https://backend.switchupxperience.com/hotels/1655313439357_0_.jpg"
+  }
+  res.send(obj)
 
 })
+
+var filestorageEngine = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads')
+  },
+  filename: (req, file, cb) => {
+    cb(null, "[maues]-" + file.originalname)
+  }
+})
+
+var upload = multer({
+  storage: filestorageEngine
+})
+
+app.post('/file', upload.single('file'), (req, res) => {
+  console.log(req.file)
+  res.send("file uploaded successfully")
+})
+
 
 
 // Handle unhandled routes
@@ -135,3 +159,5 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
+
+
