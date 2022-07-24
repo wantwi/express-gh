@@ -420,11 +420,11 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
         req.body.gallery = [gallery_1.fileUrl, gallery_2.fileUrl, gallery_3.fileUrl, gallery_4.fileUrl, gallery_5.fileUrl]
         req.body.facilityType = facilityType
 
-        // const facility = await Facility.create(req.body);
+        const facility = await Facility.create(req.body);
         res.status(200).json({
             success: true,
             message: "successful",
-            data: req.body,
+            data: facility,
         });
 
     }
