@@ -13,7 +13,6 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const hpp = require('hpp');
-const multer = require('multer')
 dotenv.config({ path: "./config/config.env" });
 
 
@@ -58,7 +57,7 @@ const limiter = rateLimit({
   max: 100
 });
 
-const whitelist = ['http://localhost:3000', 'http://localhost:3001', "https://localhost:3000", 'http://admin-portal.switchupxperience.com','https://www.switchupxperience.com', 'https://admin-portal.switchupxperience.com'];
+const whitelist = ['http://localhost:3000', 'http://localhost:3001', "https://localhost:3000", 'http://admin-portal.switchupxperience.com', 'https://www.switchupxperience.com', 'https://admin-portal.switchupxperience.com'];
 const corsOptions = {
   credentials: true, // This is important.
   origin: (origin, callback) => {
@@ -117,25 +116,6 @@ app.get('/hello', (req, res) => {
   res.send(obj)
 
 })
-
-var filestorageEngine = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './uploads')
-  },
-  filename: (req, file, cb) => {
-    cb(null, "[maues]-" + file.originalname)
-  }
-})
-
-var upload = multer({
-  storage: filestorageEngine
-})
-
-app.post('/file', upload.single('file'), (req, res) => {
-  console.log(req.file)
-  res.send("file uploaded successfully")
-})
-
 
 
 // Handle unhandled routes

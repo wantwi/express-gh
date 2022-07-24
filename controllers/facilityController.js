@@ -294,9 +294,9 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
     const { facilityType } = params
     const supportedFiles = /.png|.jpg|.jpeg|.svg/;
 
-        //console.log(req.body)
+    //console.log(req.body)
 
-        
+
 
     if (facilityType.toLowerCase() === "hotels") {
         const categoryOpts = [
@@ -382,7 +382,7 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
 
 
     const file = req.files.landingPageImage;
-     const gallery = req.files.gallery;
+    const gallery = req.files.gallery;
 
     if (gallery.length < 5) {
         return next(new ErrorHandler('Please upload 5 images for gallery.', 400));
@@ -503,19 +503,19 @@ exports.addRegion = catchAyncErrors(async (req, res, next) => {
 
     let response = await Facility.findById(req.params.id);
 
-    if(!response){
+    if (!response) {
         return next(new ErrorHandler('Facility not found', 204))
     }
 
-    console.log({...response,...req.body})
+    console.log({ ...response, ...req.body })
 
-    const facility = await Facility.updateOne({_id:req.params.id},{$set: {...req.body}});
+    const facility = await Facility.updateOne({ _id: req.params.id }, { $set: { ...req.body } });
 
     res.status(200).json({
         success: true,
         data: facility,
     });
-  
+
 });
 
 
@@ -531,17 +531,5 @@ exports.removeFacility = catchAyncErrors(async (req, res, next) => {
 
 
 
-
-exports.uploadFile = catchAyncErrors(async (req, res, next) => {
-    //adding user
-
-    console.log(req.files.file)
-
-    // if (req.file) {
-    //     req.body.image = req.file.path ? req.file.path : "";
-    // }
-
-    res.status(200).json({ file: req.files.file });
-});
 
 
