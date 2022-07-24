@@ -242,3 +242,24 @@ exports.usersStats = catchAsyncErrors(async (req, res, next) => {
   })
 
 })
+
+exports.AllUsersByType = catchAsyncErrors(async (req, res, next) => {
+  const {params} = req
+  const { userType = "users" } = params
+  let users;
+  if(userType.toLowerCase() ==="adminusers"){
+    users = await AdminUser.find({})
+  }
+  else if(userType.toLowerCase() ==="users"){
+    users = await User.find({})
+  }
+
+  res.status(200).json({
+    success: true,
+    data: users
+
+  })
+
+})
+
+

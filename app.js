@@ -58,7 +58,7 @@ const limiter = rateLimit({
   max: 100
 });
 
-const whitelist = ['http://localhost:3000', 'http://localhost:3001', "https://localhost:3000"];
+const whitelist = ['http://localhost:3000', 'http://localhost:3001', "https://localhost:3000", 'http://admin-portal.switchupxperience.com','https://www.switchupxperience.com', 'https://admin-portal.switchupxperience.com'];
 const corsOptions = {
   credentials: true, // This is important.
   origin: (origin, callback) => {
@@ -97,6 +97,7 @@ const hotels = require("./routes/hotels");
 const tour = require("./routes/toursite");
 const restaurants = require("./routes/restaurant");
 const facility = require("./routes/facility");
+const member = require("./routes/member");
 
 app.use("/api/v1", jobs);
 app.use("/api/v1", auth);
@@ -106,6 +107,7 @@ app.use("/api/v1", hotels);
 app.use("/api/v1", tour);
 app.use("/api/v1", restaurants);
 app.use("/api/v1", facility);
+app.use("/api/v1", member);
 
 app.get('/hello', (req, res) => {
   const obj = {

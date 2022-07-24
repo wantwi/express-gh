@@ -11,6 +11,7 @@ exports.getAll = async (req, res, next) => {
     if (facilityType) {
         facilities = await Facility.find({ facilityType })
     }
+
     else {
         facilities = await Facility.aggregate([
             {
@@ -106,6 +107,151 @@ exports.getAllStats = async (req, res, next) => {
 };
 
 
+
+exports.getAllbyRegions = async (req, res, next) => {
+    const { params } = req
+    const { region } = params
+    let facilities = null;
+    if (region) {
+        facilities = await Facility.find({ region })
+    }
+    else {
+        facilities = await Facility.aggregate([
+            {
+                $facet: {
+                    northern: [
+
+                        {
+                            $match: {
+                                "region": "Northern",
+
+                            },
+
+                        }
+
+                    ],
+                    upperEast: [
+                        {
+                            $match: {
+                                "region": "Upper East"
+                            }
+                        }
+                    ],
+                    upperWest: [
+                        {
+                            $match: {
+                                "region": "Upper West"
+                            }
+                        }
+                    ],
+                    savannah: [
+                        {
+                            $match: {
+                                "region": "Savannah"
+                            }
+                        }
+                    ],
+                    bono: [
+                        {
+                            $match: {
+                                "region": "Bono"
+                            }
+                        }
+                    ],
+                    bonoEast: [
+                        {
+                            $match: {
+                                "region": "Bono East"
+                            }
+                        }
+                    ],
+                    ahafo: [
+                        {
+                            $match: {
+                                "region": "Ahafo"
+                            }
+                        }
+                    ],
+                    western: [
+                        {
+                            $match: {
+                                "region": "Western"
+                            }
+                        }
+                    ],
+                    westernNorth: [
+                        {
+                            $match: {
+                                "region": "Western North"
+                            }
+                        }
+                    ],
+                    northEast: [
+                        {
+                            $match: {
+                                "region": "North-East"
+                            }
+                        }
+                    ],
+                    oti: [
+                        {
+                            $match: {
+                                "region": "Oti"
+                            }
+                        }
+                    ],
+                    volta: [
+                        {
+                            $match: {
+                                "region": "Volta"
+                            }
+                        }
+                    ],
+                    eastern: [
+                        {
+                            $match: {
+                                "region": "Western"
+                            }
+                        }
+                    ],
+                    central: [
+                        {
+                            $match: {
+                                "region": "Central"
+                            }
+                        }
+                    ],
+                    ashanti: [
+                        {
+                            $match: {
+                                "region": "Ashanti"
+                            }
+                        }
+                    ],
+                    greaterAccra: [
+                        {
+                            $match: {
+                                "region": "Greater Accra"
+                            }
+                        }
+                    ]
+                },
+
+            }
+        ])
+
+        if (facilities) {
+            facilities = facilities[0]
+        }
+    }
+
+    res.status(200).json({
+        success: true,
+        data: facilities,
+    });
+};
+
+
 exports.searchFacility = catchAyncErrors(async (req, res, next) => {
     let facilities = null
     const { query } = req
@@ -114,17 +260,17 @@ exports.searchFacility = catchAyncErrors(async (req, res, next) => {
     console.log(query);
 
     if (Object.keys(query).length > 0) {
-        const { location = "", category = "all" } = query
+        const { location = "", category = "all", type = "" } = query
         if (query?.location) {
             if (category.toLowerCase() === "all") {
                 facilities = await Facility.find({ location: { $regex: location, $options: 'i' } })
             }
             else {
-                facilities = await Facility.find({ $and: [{ location: { $regex: location, $options: 'i' } }, { category: { $regex: category, $options: 'i' } }] })
+                facilities = await Facility.find({ $and: [{ location: { $regex: location, $options: 'i' } }, { facilityType: { $regex: category, $options: 'i' } }] })
             }
         }
         else if (location === "" && category.length > 0) {
-            facilities = await Facility.find({ category: { $regex: category, $options: 'i' } })
+            facilities = await Facility.find({ facilityType: { $regex: category, $options: 'i' } })
         }
     }
 
@@ -142,12 +288,15 @@ exports.searchFacility = catchAyncErrors(async (req, res, next) => {
 })
 
 exports.addFacility = catchAyncErrors(async (req, res, next) => {
+    console.log(req)
     let galleryImages = [];
     const { params } = req
     const { facilityType } = params
     const supportedFiles = /.png|.jpg|.jpeg|.svg/;
 
+        //console.log(req.body)
 
+        
 
     if (facilityType.toLowerCase() === "hotels") {
         const categoryOpts = [
@@ -159,19 +308,18 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
             "hostels",
             "inns",
             "bed & breakfast",
-            "bed and breakfast",
-            "swimming pool"
+            "bed and breakfast"
         ]
 
-        if (!req.body.hasOwnProperty('amenities') || req.body?.amenities.length === 0) {
-            return next(new ErrorHandler("Hotels requires amenities", 400));
-        }
+        // if (!req.body.hasOwnProperty('amenities') || req.body?.amenities.length === 0) {
+        //     return next(new ErrorHandler("Hotels requires amenities", 400));
+        // }
 
-        if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
-            return next(new ErrorHandler("Please select correct options for category", 400));
-        }
+        // if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
+        //     return next(new ErrorHandler("Please select correct options for category", 400));
+        // }
 
-        req.body.amenities = req.body.amenities.map(x => x.toLowerCase())
+        // req.body.amenities = req.body.amenities.split(',')
     }
     else if (facilityType.toLowerCase() === "restaurants") {
         const categoryOpts = [
@@ -187,45 +335,45 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
             "pub"
         ]
 
-        if (!req.body.hasOwnProperty('deviveryService')) {
-            return next(new ErrorHandler("Devivery Service option is required", 400));
-        }
+        // if (!req.body.hasOwnProperty('deviveryService')) {
+        //     return next(new ErrorHandler("Devivery Service option is required", 400));
+        // }
 
-        if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
-            return next(new ErrorHandler("Please select correct options for category", 400));
-        }
+        // if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
+        //     return next(new ErrorHandler("Please select correct options for category", 400));
+        // }
     }
     else if (facilityType.toLowerCase() === "toursites") {
-        const categoryOpts = [
-            "historical & heritage attractions",
-            "historical and heritage attractions",
-            "beaches",
-            "national parks",
-            "waterfalls",
-            "mountains & hills",
-            "mountains and hills",
-            "islands",
-            "forests",
-            "entertainment parks",
-            "wildlife attractions",
-            "museums & art galleries",
-            "museums and art galleries",
-            "stadiums",
-            "exhibitions",
-            "festivals",
-            "others"
-        ]
+        // const categoryOpts = [
+        //     "historical & heritage attractions",
+        //     "historical and heritage attractions",
+        //     "beaches",
+        //     "national parks",
+        //     "waterfalls",
+        //     "mountains & hills",
+        //     "mountains and hills",
+        //     "islands",
+        //     "forests",
+        //     "entertainment parks",
+        //     "wildlife attractions",
+        //     "museums & art galleries",
+        //     "museums and art galleries",
+        //     "stadiums",
+        //     "exhibitions",
+        //     "festivals",
+        //     "others"
+        // ]
 
-        if (!req.body.hasOwnProperty('thingsTodo') || req.body?.thingsTodo.length === 0) {
-            return next(new ErrorHandler("Things Todo is required", 400));
-        }
-        if (!req.body.hasOwnProperty('bestVisitingTime')) {
-            return next(new ErrorHandler("Best Visiting Time is required", 400));
-        }
+        // if (!req.body.hasOwnProperty('thingsTodo') || req.body?.thingsTodo.length === 0) {
+        //     return next(new ErrorHandler("Things Todo is required", 400));
+        // }
+        // if (!req.body.hasOwnProperty('bestVisitingTime')) {
+        //     return next(new ErrorHandler("Best Visiting Time is required", 400));
+        // }
 
-        if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
-            return next(new ErrorHandler("Please select correct options for category", 400));
-        }
+        // if (!categoryOpts.includes(req.body?.category.toLowerCase())) {
+        //     return next(new ErrorHandler("Please select correct options for category", 400));
+        // }
     }
 
     if (!req.files) {
@@ -234,7 +382,7 @@ exports.addFacility = catchAyncErrors(async (req, res, next) => {
 
 
     const file = req.files.landingPageImage;
-    const gallery = req.files.gallery;
+     const gallery = req.files.gallery;
 
     if (gallery.length < 5) {
         return next(new ErrorHandler('Please upload 5 images for gallery.', 400));
@@ -349,6 +497,39 @@ exports.getById = catchAyncErrors(async (req, res, next) => {
         data: facility,
     });
 });
+
+exports.addRegion = catchAyncErrors(async (req, res, next) => {
+
+
+    let response = await Facility.findById(req.params.id);
+
+    if(!response){
+        return next(new ErrorHandler('Facility not found', 204))
+    }
+
+    console.log({...response,...req.body})
+
+    const facility = await Facility.updateOne({_id:req.params.id},{$set: {...req.body}});
+
+    res.status(200).json({
+        success: true,
+        data: facility,
+    });
+  
+});
+
+
+exports.removeFacility = catchAyncErrors(async (req, res, next) => {
+
+    let response = await Facility.findOneAndRemove({ _id: req.params.id });
+    res.status(200).json({
+        success: true,
+        data: response,
+    });
+
+});
+
+
 
 
 exports.uploadFile = catchAyncErrors(async (req, res, next) => {
