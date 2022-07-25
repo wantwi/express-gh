@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { addFacility, getAll, getAllStats, getById, searchFacility,getAllbyRegions, removeFacility } = require("../controllers/facilityController");
+const { addFacility, getAll, getAllStats, getById, searchFacility,getAllbyRegions, removeFacility,addRegion } = require("../controllers/facilityController");
 
 //  const { authorizeRoles,isAdminAuthenticatedUser } = require("../middleware/auth");
 
@@ -14,6 +14,7 @@ router.route("/add/:facilityType").post(addFacility);
 router.route("/getAllbyRegions").get(getAllbyRegions);
 router.route("/getAllbyRegions/:region").get(getAllbyRegions);
 router.route("/getById/:id").delete(removeFacility);
+router.route("/facility/:id").patch(addRegion);
 
 
 module.exports = router;
