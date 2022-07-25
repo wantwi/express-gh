@@ -87,6 +87,18 @@ const facilitySchema = new mongoose.Schema({
     bestVisitingTime: {
         type: String
     },
+    minPrice:{
+        type: Number,
+        default:0
+    },
+    maxPrice:{
+        type: Number,
+        default:0
+    },
+    currency:{
+        type: String,
+        default:"GHS"
+    },
     landingPageImage: {
         type: String,
         required: [true, "Please add landing page image."],
