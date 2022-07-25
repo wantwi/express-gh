@@ -12,7 +12,7 @@ const connectDb = () => {
         console.log({ err });
     })
 }
-
+ 
 module.exports = connectDb
 
 //mongoose.connect(process.env.NODE_EVN ==="production" ?  process.env.DB_PRODUCTION : process.env.DB_LOCAL, {
