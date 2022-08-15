@@ -72,7 +72,7 @@ userSchema.pre("save", async function (next) {
 // Return JSON Web Token
 userSchema.methods.getJwtToken = function () {
   const user = this;
-  const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: this._id, name:this.name, email:this.email }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_TIME,
   });
 
